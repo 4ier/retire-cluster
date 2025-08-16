@@ -1,0 +1,7 @@
+# Core requirements for Retire-Cluster
+psutil>=5.8.0
+
+# Optional requirements (uncomment if needed)
+# mcp>=0.1.0  # For MCP integration with Claude Code
+# requests>=2.25.0  # For HTTP-based communication (alternative to sockets)
+# sqlite3  # Usually included with Python, for database persistence

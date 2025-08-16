@@ -1,0 +1,22 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "max_connections": 50
+  },
+  "database": {
+    "path": "./cluster_metadata.db",
+    "backup_enabled": true,
+    "backup_interval": 3600
+  },
+  "heartbeat": {
+    "interval_seconds": 60,
+    "timeout_threshold": 300,
+    "cleanup_interval": 1800
+  },
+  "scheduling": {
+    "algorithm": "smart_weighted",
+    "load_balancing": true,
+    "prefer_local": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "device": {
+    "id": "worker-001",
+    "role": "worker",
+    "tags": ["test", "android", "termux"],
+    "description": "Test worker node on Android Termux"
+  },
+  "main_node": {
+    "host": "192.168.0.116",
+    "port": 8080,
+    "ssl_enabled": false
+  },
+  "heartbeat": {
+    "interval_seconds": 60,
+    "health_check_enabled": true,
+    "auto_recovery": true
+  },
+  "capabilities": {
+    "max_concurrent_tasks": 2,
+    "resource_limits": {
+      "cpu_threshold": 80,
+      "memory_threshold": 85,
+      "storage_threshold": 90
+    }
+  }
+}
