@@ -16,6 +16,16 @@ requirements = [
 
 # Optional requirements
 optional_requirements = {
+    "api": [
+        "flask>=2.0.0",
+        "flask-cors>=4.0.0",
+        "jsonschema>=4.0.0",
+    ],
+    "integrations": [
+        "temporalio>=1.0.0",
+        "celery>=5.0.0",
+        "requests>=2.25.0",
+    ],
     "mcp": ["mcp>=0.1.0"],
     "dev": [
         "pytest>=7.0.0",
@@ -23,6 +33,14 @@ optional_requirements = {
         "black>=22.0.0",
         "flake8>=5.0.0",
         "mypy>=1.0.0",
+    ],
+    "all": [
+        "flask>=2.0.0",
+        "flask-cors>=4.0.0", 
+        "jsonschema>=4.0.0",
+        "temporalio>=1.0.0",
+        "celery>=5.0.0",
+        "requests>=2.25.0",
     ]
 }
 
@@ -43,11 +61,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: System :: Distributed Computing",
         "Topic :: System :: Monitoring",
         "Topic :: System :: Systems Administration",
@@ -57,8 +73,10 @@ setup(
     extras_require=optional_requirements,
     entry_points={
         "console_scripts": [
-            "retire-cluster-main=retire_cluster.main_node:main",
-            "retire-cluster-worker=retire_cluster.worker_node:main",
+            "retire-cluster-main=retire_cluster.cli.main_cli:main",
+            "retire-cluster-worker=retire_cluster.cli.worker_cli:main",
+            "retire-cluster-status=retire_cluster.cli.status_cli:main",
+            "retire-cluster-api=retire_cluster.cli.api_cli:main",
         ],
     },
     include_package_data=True,
