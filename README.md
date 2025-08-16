@@ -23,6 +23,11 @@ The system supports automatic device discovery, real-time status monitoring, int
 - **🔄 Dynamic Scaling**: Support hot-plugging of devices without service restart
 - **🛡️ Fault Tolerance**: Automatic failure detection and task redistribution
 - **🌍 Cross-Platform**: Support for Windows, Linux, macOS, and Android (Termux)
+- **⚡ Task Execution**: Distributed task execution with priority queuing and requirement matching
+- **🌐 REST API**: Comprehensive HTTP API for programmatic cluster management
+- **🔐 Security**: API authentication, rate limiting, and input validation
+- **🔗 Integrations**: Support for Temporal, Celery, and custom framework integrations
+- **📦 Easy Installation**: Single pip install with automatic configuration
 
 ## 🏗️ Architecture
 
@@ -56,13 +61,22 @@ The system supports automatic device discovery, real-time status monitoring, int
 ### Installation
 
 ```bash
-# Install from PyPI (recommended)
+# Basic installation
 pip install retire-cluster
+
+# With REST API support
+pip install retire-cluster[api]
+
+# With framework integrations
+pip install retire-cluster[integrations]
+
+# Full installation with all features
+pip install retire-cluster[all]
 
 # Or install from source
 git clone https://github.com/4ier/retire-cluster.git
 cd retire-cluster
-pip install .
+pip install .[all]
 ```
 
 ### Start Main Node
@@ -142,6 +156,34 @@ curl -X POST http://localhost:8081/api/v1/tasks \
 
 # Check task status
 curl http://localhost:8081/api/v1/tasks/{task_id}/status
+```
+
+### Task Execution
+
+```python
+# Submit tasks programmatically
+from retire_cluster.tasks import Task, TaskRequirements, TaskPriority
+
+# Simple task
+task = Task(
+    task_type="echo",
+    payload={"message": "Hello World!"},
+    priority=TaskPriority.NORMAL
+)
+
+# Task with specific requirements
+compute_task = Task(
+    task_type="python_eval",
+    payload={"expression": "sum(range(1000000))"},
+    requirements=TaskRequirements(
+        min_cpu_cores=4,
+        min_memory_gb=8,
+        required_platform="linux"
+    )
+)
+
+# Submit to scheduler
+task_id = scheduler.submit_task(task)
 ```
 
 ## 📖 Documentation
@@ -287,23 +329,51 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🗺️ Roadmap
 
-### v1.0.0 (Current)
+### v1.0.0 (Released)
 - [x] Basic device management
 - [x] TCP socket communication
 - [x] Heartbeat monitoring
 - [x] Cross-platform support
+- [x] CLI package-based installation
+- [x] Device profiling and auto-detection
+- [x] Simple worker deployment
 
-### v1.1.0 (Planned)
-- [ ] Task execution framework
+### v1.1.0 (Current)
+- [x] Task execution framework
+- [x] Intelligent task scheduling and queue management
+- [x] Built-in task types (echo, sleep, system_info, etc.)
+- [x] Task requirements and device capability matching
+- [x] REST API with comprehensive endpoints
+- [x] API authentication and security middleware
+- [x] Complete API documentation and examples
 - [ ] Web dashboard
-- [ ] REST API
 - [ ] Docker support
 
+### v1.2.0 (Planned)
+- [ ] Web-based management dashboard
+- [ ] Real-time cluster monitoring UI
+- [ ] Interactive task submission interface
+- [ ] Device management web interface
+- [ ] Docker containerization support
+- [ ] Docker Compose deployment templates
+
 ### v2.0.0 (Future)
-- [ ] Distributed storage
-- [ ] Load balancing
-- [ ] Multi-cluster support
-- [ ] Cloud integration
+- [ ] Distributed storage system
+- [ ] Advanced load balancing algorithms
+- [ ] Multi-cluster federation
+- [ ] Cloud provider integration (AWS, Azure, GCP)
+- [ ] Auto-scaling capabilities
+- [ ] Machine learning workload optimization
+- [ ] WebSocket real-time updates
+- [ ] Metrics and monitoring integration (Prometheus, Grafana)
+
+### Framework Integrations (Ongoing)
+- [x] Temporal workflow integration support
+- [x] Celery task queue integration
+- [x] HTTP bridge for external frameworks
+- [ ] Kubernetes operator
+- [ ] Apache Airflow integration
+- [ ] Ray distributed computing integration
 
 ---
 

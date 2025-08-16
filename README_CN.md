@@ -1,7 +1,7 @@
 # Retire-Cluster
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.7+-green.svg)
+![Python](https://img.shields.io/badge/python-3.10+-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-lightgrey.svg)
 
 > 让闲置设备重获新生！基于TCP Socket通信的分布式系统，将你的旧手机、平板、笔记本等闲置设备组织成一个统一的AI工作集群。
@@ -23,6 +23,11 @@ Retire-Cluster是一个创新的闲置设备复用解决方案，专为拥有多
 - **🔄 动态扩展**: 支持设备热插拔，无需重启服务即可添加新设备
 - **🛡️ 故障容错**: 自动故障检测和任务重新分配机制
 - **🌍 跨平台支持**: 支持Windows、Linux、macOS、Android (Termux)
+- **⚡ 任务执行**: 分布式任务执行，支持优先级队列和需求匹配
+- **🌐 REST API**: 完整的HTTP API，支持程序化集群管理
+- **🔐 安全性**: API认证、限流和输入验证
+- **🔗 框架集成**: 支持Temporal、Celery等主流框架集成
+- **📦 简单安装**: 单一pip命令安装，自动配置
 
 ## 🏗️ 系统架构
 
@@ -49,42 +54,136 @@ Retire-Cluster是一个创新的闲置设备复用解决方案，专为拥有多
 
 ### 系统要求
 
-- Python 3.7+
+- Python 3.10+
 - 网络连通性（所有设备需在同一网络）
 - 可选：psutil用于增强系统监控
 
 ### 安装
 
 ```bash
-# 克隆仓库
+# 基础安装
+pip install retire-cluster
+
+# 包含REST API支持
+pip install retire-cluster[api]
+
+# 包含框架集成
+pip install retire-cluster[integrations]
+
+# 完整安装（包含所有功能）
+pip install retire-cluster[all]
+
+# 或从源码安装
 git clone https://github.com/4ier/retire-cluster.git
 cd retire-cluster
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 或作为包安装
-pip install .
+pip install .[all]
 ```
 
 ### 启动主节点
 
 ```bash
-# 使用简单示例服务器
-python examples/simple_main_server.py
+# 使用默认设置启动主节点
+retire-cluster-main
 
-# 或使用包
-python -m retire_cluster.main_node --host 0.0.0.0 --port 8080
+# 使用自定义端口和数据目录
+retire-cluster-main --port 9090 --data-dir /opt/retire-cluster
+
+# 初始化配置文件
+retire-cluster-main --init-config
 ```
 
 ### 启动工作节点
 
 ```bash
-# 使用简单示例客户端
-python examples/simple_worker_client.py --device-id worker-001 --main-host <主节点IP>
+# 使用自动检测加入集群
+retire-cluster-worker --join 192.168.1.100
 
-# 或使用包
-python -m retire_cluster.worker_node --device-id worker-001 --main-host <主节点IP>
+# 使用自定义设备ID和角色
+retire-cluster-worker --join 192.168.1.100:8080 --device-id my-laptop --role compute
+
+# 仅测试连接
+retire-cluster-worker --test 192.168.1.100
+```
+
+### 监控集群状态
+
+```bash
+# 查看集群概况
+retire-cluster-status 192.168.1.100
+
+# 列出所有设备
+retire-cluster-status 192.168.1.100 --devices
+
+# 查看特定设备详情
+retire-cluster-status 192.168.1.100 --device worker-001
+
+# 按角色筛选设备
+retire-cluster-status 192.168.1.100 --devices --role mobile
+
+# JSON格式输出
+retire-cluster-status 192.168.1.100 --json
+```
+
+### 启动REST API服务器
+
+```bash
+# 使用默认设置启动API服务器
+retire-cluster-api
+
+# 启用认证和自定义端口
+retire-cluster-api --port 8081 --auth --api-key your-secret-key
+
+# 连接到指定集群节点
+retire-cluster-api --cluster-host 192.168.1.100 --cluster-port 8080
+```
+
+### 使用REST API
+
+```bash
+# 检查API健康状态
+curl http://localhost:8081/health
+
+# 获取集群状态
+curl http://localhost:8081/api/v1/cluster/status
+
+# 列出设备
+curl http://localhost:8081/api/v1/devices
+
+# 提交任务
+curl -X POST http://localhost:8081/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"task_type": "echo", "payload": {"message": "Hello API!"}}'
+
+# 检查任务状态
+curl http://localhost:8081/api/v1/tasks/{task_id}/status
+```
+
+### 任务执行
+
+```python
+# 程序化提交任务
+from retire_cluster.tasks import Task, TaskRequirements, TaskPriority
+
+# 简单任务
+task = Task(
+    task_type="echo",
+    payload={"message": "Hello World!"},
+    priority=TaskPriority.NORMAL
+)
+
+# 带特定需求的任务
+compute_task = Task(
+    task_type="python_eval",
+    payload={"expression": "sum(range(1000000))"},
+    requirements=TaskRequirements(
+        min_cpu_cores=4,
+        min_memory_gb=8,
+        required_platform="linux"
+    )
+)
+
+# 提交到调度器
+task_id = scheduler.submit_task(task)
 ```
 
 ### 测试连接
@@ -140,7 +239,7 @@ pkg install python
 pip install psutil
 
 # 运行工作节点
-python simple_worker_client.py --device-id android-001 --role mobile --main-host <主节点IP>
+retire-cluster-worker --join <主节点IP> --role mobile
 ```
 
 #### 树莓派 / ARM设备
@@ -151,7 +250,7 @@ sudo apt-get update
 sudo apt-get install python3 python3-pip
 
 # 运行工作节点
-python3 simple_worker_client.py --device-id rpi-001 --role compute --main-host <主节点IP>
+retire-cluster-worker --join <主节点IP> --role compute
 ```
 
 ## 🔧 高级功能
@@ -186,6 +285,39 @@ print(f"在线设备: {stats['online_devices']}")
 print(f"总资源: {stats['total_resources']}")
 ```
 
+## 📊 API参考
+
+### 消息协议
+
+系统使用基于JSON的TCP Socket通信：
+
+```json
+{
+  "message_type": "register|heartbeat|status|task_assign|task_result",
+  "sender_id": "device-id",
+  "data": {
+    // 消息特定数据
+  }
+}
+```
+
+### REST API端点
+
+- **集群管理**: `/api/v1/cluster/*` - 状态、健康检查、指标
+- **设备管理**: `/api/v1/devices/*` - 列表、详情、状态、删除
+- **任务管理**: `/api/v1/tasks/*` - 提交、查询、取消、重试
+- **配置管理**: `/api/v1/config/*` - 读取、更新、重置
+
+详细API文档请参考 [REST API文档](docs/rest_api.md)
+
+## 📚 文档资源
+
+- **任务执行框架**: [任务执行文档](docs/task_execution_framework.md)
+- **REST API**: [API完整文档](docs/rest_api.md)
+- **示例代码**: 
+  - [任务执行示例](examples/task_execution_example.py)
+  - [API使用示例](examples/api_usage_example.py)
+
 ## 🤝 贡献
 
 欢迎贡献代码！详情请查看 [CONTRIBUTING.md](CONTRIBUTING.md)。
@@ -202,23 +334,51 @@ print(f"总资源: {stats['total_resources']}")
 
 ## 🗺️ 发展路线图
 
-### v1.0.0 (当前版本)
+### v1.0.0 (已发布)
 - [x] 基础设备管理
 - [x] TCP socket通信
 - [x] 心跳监控
 - [x] 跨平台支持
+- [x] CLI包管理安装
+- [x] 设备分析和自动检测
+- [x] 简化的工作节点部署
 
-### v1.1.0 (计划中)
-- [ ] 任务执行框架
+### v1.1.0 (当前版本)
+- [x] 任务执行框架
+- [x] 智能任务调度和队列管理
+- [x] 内置任务类型（echo、sleep、system_info等）
+- [x] 任务需求与设备能力匹配
+- [x] REST API完整端点实现
+- [x] API认证和安全中间件
+- [x] 完整的API文档和示例
 - [ ] Web管理界面
-- [ ] REST API
 - [ ] Docker支持
 
+### v1.2.0 (计划中)
+- [ ] Web管理仪表板
+- [ ] 实时集群监控界面
+- [ ] 交互式任务提交界面
+- [ ] 设备管理Web界面
+- [ ] Docker容器化支持
+- [ ] Docker Compose部署模板
+
 ### v2.0.0 (未来)
-- [ ] 分布式存储
-- [ ] 负载均衡
-- [ ] 多集群支持
-- [ ] 云端集成
+- [ ] 分布式存储系统
+- [ ] 高级负载均衡算法
+- [ ] 多集群联邦
+- [ ] 云服务商集成（AWS、Azure、GCP）
+- [ ] 自动扩缩容能力
+- [ ] 机器学习工作负载优化
+- [ ] WebSocket实时更新
+- [ ] 监控指标集成（Prometheus、Grafana）
+
+### 框架集成（进行中）
+- [x] Temporal工作流集成支持
+- [x] Celery任务队列集成
+- [x] HTTP桥接外部框架
+- [ ] Kubernetes操作器
+- [ ] Apache Airflow集成
+- [ ] Ray分布式计算集成
 
 ---
 
