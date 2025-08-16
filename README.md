@@ -110,6 +110,40 @@ retire-cluster-status 192.168.1.100 --devices --role mobile
 retire-cluster-status 192.168.1.100 --json
 ```
 
+### Start REST API Server
+
+```bash
+# Start API server with default settings
+retire-cluster-api
+
+# Start with authentication and custom port
+retire-cluster-api --port 8081 --auth --api-key your-secret-key
+
+# Connect to specific cluster node
+retire-cluster-api --cluster-host 192.168.1.100 --cluster-port 8080
+```
+
+### Use REST API
+
+```bash
+# Check API health
+curl http://localhost:8081/health
+
+# Get cluster status
+curl http://localhost:8081/api/v1/cluster/status
+
+# List devices
+curl http://localhost:8081/api/v1/devices
+
+# Submit a task
+curl -X POST http://localhost:8081/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"task_type": "echo", "payload": {"message": "Hello API!"}}'
+
+# Check task status
+curl http://localhost:8081/api/v1/tasks/{task_id}/status
+```
+
 ## 📖 Documentation
 
 ### Basic Usage

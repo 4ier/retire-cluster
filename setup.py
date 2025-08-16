@@ -16,6 +16,16 @@ requirements = [
 
 # Optional requirements
 optional_requirements = {
+    "api": [
+        "flask>=2.0.0",
+        "flask-cors>=4.0.0",
+        "jsonschema>=4.0.0",
+    ],
+    "integrations": [
+        "temporalio>=1.0.0",
+        "celery>=5.0.0",
+        "requests>=2.25.0",
+    ],
     "mcp": ["mcp>=0.1.0"],
     "dev": [
         "pytest>=7.0.0",
@@ -23,6 +33,14 @@ optional_requirements = {
         "black>=22.0.0",
         "flake8>=5.0.0",
         "mypy>=1.0.0",
+    ],
+    "all": [
+        "flask>=2.0.0",
+        "flask-cors>=4.0.0", 
+        "jsonschema>=4.0.0",
+        "temporalio>=1.0.0",
+        "celery>=5.0.0",
+        "requests>=2.25.0",
     ]
 }
 
@@ -58,6 +76,7 @@ setup(
             "retire-cluster-main=retire_cluster.cli.main_cli:main",
             "retire-cluster-worker=retire_cluster.cli.worker_cli:main",
             "retire-cluster-status=retire_cluster.cli.status_cli:main",
+            "retire-cluster-api=retire_cluster.cli.api_cli:main",
         ],
     },
     include_package_data=True,
