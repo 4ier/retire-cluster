@@ -1,7 +1,7 @@
 # Retire-Cluster
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.7+-green.svg)
+![Python](https://img.shields.io/badge/python-3.10+-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-lightgrey.svg)
 
 > Transform your idle devices into a unified AI work cluster! A distributed system based on TCP socket communication that organizes old phones, tablets, and laptops into a powerful computing cluster.
@@ -49,7 +49,7 @@ The system supports automatic device discovery, real-time status monitoring, int
 
 ### Requirements
 
-- Python 3.7+
+- Python 3.10+
 - Network connectivity (all devices on the same network)
 - Optional: psutil for enhanced system monitoring
 

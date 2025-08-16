@@ -52,7 +52,7 @@ setup(
         "Topic :: System :: Monitoring",
         "Topic :: System :: Systems Administration",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.10",
     install_requires=requirements,
     extras_require=optional_requirements,
     entry_points={
