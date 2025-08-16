@@ -21,6 +21,10 @@ class MessageType(Enum):
     DEVICE_INFO = "device_info"
     TASK_ASSIGN = "task_assign"
     TASK_RESULT = "task_result"
+    TASK_STATUS = "task_status"
+    TASK_CANCEL = "task_cancel"
+    TASK_REQUEST = "task_request"
+    TASK_SUBMIT = "task_submit"
     ERROR = "error"
     ACK = "ack"
 
@@ -134,4 +138,60 @@ def create_ack_message(sender_id: str, original_message_id: str, result: Optiona
         message_type=MessageType.ACK,
         sender_id=sender_id,
         data=data
+    )
+
+
+def create_task_submit_message(sender_id: str, task_data: Dict[str, Any]) -> Message:
+    """Create task submission message"""
+    return Message(
+        message_type=MessageType.TASK_SUBMIT,
+        sender_id=sender_id,
+        data={'task': task_data}
+    )
+
+
+def create_task_assign_message(sender_id: str, receiver_id: str, task_data: Dict[str, Any]) -> Message:
+    """Create task assignment message"""
+    return Message(
+        message_type=MessageType.TASK_ASSIGN,
+        sender_id=sender_id,
+        receiver_id=receiver_id,
+        data={'task': task_data}
+    )
+
+
+def create_task_result_message(sender_id: str, task_result: Dict[str, Any]) -> Message:
+    """Create task result message"""
+    return Message(
+        message_type=MessageType.TASK_RESULT,
+        sender_id=sender_id,
+        data={'result': task_result}
+    )
+
+
+def create_task_status_message(sender_id: str, task_id: str) -> Message:
+    """Create task status query message"""
+    return Message(
+        message_type=MessageType.TASK_STATUS,
+        sender_id=sender_id,
+        data={'task_id': task_id}
+    )
+
+
+def create_task_cancel_message(sender_id: str, task_id: str, receiver_id: Optional[str] = None) -> Message:
+    """Create task cancellation message"""
+    return Message(
+        message_type=MessageType.TASK_CANCEL,
+        sender_id=sender_id,
+        receiver_id=receiver_id,
+        data={'task_id': task_id}
+    )
+
+
+def create_task_request_message(sender_id: str, capabilities: Dict[str, Any]) -> Message:
+    """Create task request message (worker requesting tasks)"""
+    return Message(
+        message_type=MessageType.TASK_REQUEST,
+        sender_id=sender_id,
+        data={'capabilities': capabilities}
     )

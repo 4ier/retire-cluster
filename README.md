@@ -56,42 +56,58 @@ The system supports automatic device discovery, real-time status monitoring, int
 ### Installation
 
 ```bash
-# Clone the repository
+# Install from PyPI (recommended)
+pip install retire-cluster
+
+# Or install from source
 git clone https://github.com/4ier/retire-cluster.git
 cd retire-cluster
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Or install as package
 pip install .
 ```
 
 ### Start Main Node
 
 ```bash
-# Using the simple example server
-python examples/simple_main_server.py
+# Start main node with default settings
+retire-cluster-main
 
-# Or using the package
-python -m retire_cluster.main_node --host 0.0.0.0 --port 8080
+# Start with custom port and data directory
+retire-cluster-main --port 9090 --data-dir /opt/retire-cluster
+
+# Initialize configuration file
+retire-cluster-main --init-config
 ```
 
 ### Start Worker Node
 
 ```bash
-# Using the simple example client
-python examples/simple_worker_client.py --device-id worker-001 --main-host <MAIN_NODE_IP>
+# Join cluster with auto-detection
+retire-cluster-worker --join 192.168.1.100
 
-# Or using the package
-python -m retire_cluster.worker_node --device-id worker-001 --main-host <MAIN_NODE_IP>
+# Join with custom device ID and role
+retire-cluster-worker --join 192.168.1.100:8080 --device-id my-laptop --role compute
+
+# Test connection only
+retire-cluster-worker --test 192.168.1.100
 ```
 
-### Test Connection
+### Monitor Cluster Status
 
 ```bash
-# Test worker connection to main node
-python examples/simple_worker_client.py --device-id test-001 --test --main-host <MAIN_NODE_IP>
+# View cluster overview
+retire-cluster-status 192.168.1.100
+
+# List all devices
+retire-cluster-status 192.168.1.100 --devices
+
+# View specific device details
+retire-cluster-status 192.168.1.100 --device worker-001
+
+# Filter devices by role
+retire-cluster-status 192.168.1.100 --devices --role mobile
+
+# Output in JSON format
+retire-cluster-status 192.168.1.100 --json
 ```
 
 ## 📖 Documentation
