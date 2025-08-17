@@ -147,3 +147,4 @@ worker_config.json
 *.temp
 *.tar.gz
 *.zip
+.claude/
