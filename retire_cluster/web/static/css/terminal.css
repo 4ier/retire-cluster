@@ -1,0 +1,457 @@
+/* Terminal CSS for Retire-Cluster */
+
+:root {
+    /* Terminal Colors */
+    --bg-primary: #0c0c0c;
+    --bg-secondary: #1a1a1a;
+    --text-primary: #00ff00;
+    --text-secondary: #00cc00;
+    --text-dim: #008800;
+    --prompt: #00ffff;
+    --error: #ff0000;
+    --warning: #ffff00;
+    --success: #00ff00;
+    --info: #0088ff;
+    
+    /* Layout */
+    --header-height: 60px;
+    --footer-height: 30px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Terminal Header */
+.terminal-header {
+    height: var(--header-height);
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--text-dim);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.terminal-title {
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.terminal-title .icon {
+    color: var(--success);
+}
+
+.terminal-status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 14px;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-indicator.online {
+    background: var(--success);
+    box-shadow: 0 0 10px var(--success);
+}
+
+.status-indicator.offline {
+    background: var(--error);
+}
+
+/* Terminal Main Area */
+.terminal-main {
+    height: calc(100vh - var(--header-height) - var(--footer-height));
+    display: flex;
+}
+
+/* Terminal Output Area */
+.terminal-container {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+}
+
+#terminal {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+/* xterm.js overrides */
+.xterm {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+}
+
+.xterm-viewport {
+    background: var(--bg-primary) !important;
+}
+
+.xterm-screen {
+    background: var(--bg-primary) !important;
+}
+
+.xterm-cursor {
+    background: var(--text-primary) !important;
+    color: var(--bg-primary) !important;
+}
+
+/* Sidebar */
+.terminal-sidebar {
+    width: 300px;
+    background: var(--bg-secondary);
+    border-left: 2px solid var(--text-dim);
+    padding: 20px;
+    overflow-y: auto;
+    display: none; /* Hidden by default */
+}
+
+.terminal-sidebar.visible {
+    display: block;
+}
+
+.sidebar-section {
+    margin-bottom: 30px;
+}
+
+.sidebar-section h3 {
+    color: var(--prompt);
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid var(--text-dim);
+    padding-bottom: 5px;
+}
+
+.sidebar-section ul {
+    list-style: none;
+}
+
+.sidebar-section li {
+    padding: 5px 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.device-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    margin: 2px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.device-status {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.device-status.online {
+    background: var(--success);
+}
+
+.device-status.offline {
+    background: var(--error);
+}
+
+.device-status.warning {
+    background: var(--warning);
+}
+
+/* Terminal Footer */
+.terminal-footer {
+    height: var(--footer-height);
+    background: var(--bg-secondary);
+    border-top: 2px solid var(--text-dim);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    justify-content: space-between;
+}
+
+.footer-shortcuts {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-shortcuts span {
+    white-space: nowrap;
+}
+
+.footer-shortcuts .key {
+    color: var(--prompt);
+    font-weight: bold;
+}
+
+.footer-info {
+    display: flex;
+    gap: 15px;
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-dim);
+    border-radius: 50%;
+    border-top-color: var(--text-primary);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Pulse Animation for Status Indicators */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+    }
+}
+
+/* Terminal Themes */
+body.theme-matrix {
+    --text-primary: #00ff00;
+    --text-secondary: #00cc00;
+    --prompt: #00ffff;
+}
+
+body.theme-amber {
+    --text-primary: #ffb000;
+    --text-secondary: #ff8800;
+    --prompt: #ffff00;
+}
+
+body.theme-blue {
+    --text-primary: #00aaff;
+    --text-secondary: #0088cc;
+    --prompt: #00ffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .terminal-header {
+        padding: 0 10px;
+    }
+    
+    .terminal-title {
+        font-size: 16px;
+    }
+    
+    .terminal-status {
+        font-size: 12px;
+        gap: 10px;
+    }
+    
+    .terminal-sidebar {
+        width: 250px;
+    }
+    
+    .footer-shortcuts {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .terminal-header {
+        height: 50px;
+    }
+    
+    .terminal-main {
+        height: calc(100vh - 50px - 25px);
+    }
+    
+    .terminal-footer {
+        height: 25px;
+        font-size: 10px;
+    }
+    
+    .terminal-sidebar {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        height: calc(100vh - 75px);
+        z-index: 1000;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-dim);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Command History Popup */
+.history-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border: 2px solid var(--text-dim);
+    border-bottom: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.history-popup.visible {
+    display: block;
+}
+
+.history-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    border-bottom: 1px solid var(--text-dim);
+}
+
+.history-item:hover,
+.history-item.selected {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+/* Auto-complete Popup */
+.autocomplete-popup {
+    position: absolute;
+    background: var(--bg-secondary);
+    border: 2px solid var(--text-dim);
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    font-size: 12px;
+}
+
+.autocomplete-popup.visible {
+    display: block;
+}
+
+.autocomplete-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.autocomplete-item .description {
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* Status Messages */
+.status-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 2000;
+    animation: slideIn 0.3s ease-out;
+    max-width: 300px;
+}
+
+.status-message.success {
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+
+.status-message.error {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid var(--error);
+    color: var(--error);
+}
+
+.status-message.warning {
+    background: rgba(255, 255, 0, 0.2);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Hide status message */
+.status-message.hiding {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
