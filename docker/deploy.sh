@@ -62,9 +62,11 @@ setup_directories() {
     mkdir -p "${DATA_PATH}/nginx_logs"
     
     # Set permissions (adjust UID/GID as needed)
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        chown -R 1000:1000 "${DATA_PATH}"
-        chmod -R 755 "${DATA_PATH}"
+    if [[ "$OSTYPE" == "linux-gnu"* ]] && [ "$EUID" -eq 0 ]; then
+        chown -R 1000:1000 "${DATA_PATH}" 2>/dev/null || print_warn "Cannot change ownership, continuing..."
+        chmod -R 755 "${DATA_PATH}" 2>/dev/null || print_warn "Cannot change permissions, continuing..."
+    else
+        print_info "Skipping permission changes (not running as root or not Linux)"
     fi
     
     print_info "Directories created at ${DATA_PATH}"
