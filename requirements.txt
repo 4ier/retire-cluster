@@ -1,7 +1,32 @@
 # Core requirements for Retire-Cluster
+
+# System monitoring and process management
 psutil>=5.8.0
 
-# Optional requirements (uncomment if needed)
-# mcp>=0.1.0  # For MCP integration with Claude Code
-# requests>=2.25.0  # For HTTP-based communication (alternative to sockets)
-# sqlite3  # Usually included with Python, for database persistence
+# Web framework for dashboard
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+
+# Database (SQLite is included with Python, but we need the driver)
+# sqlite3 is built-in, no need to install
+
+# For better JSON handling
+simplejson>=3.19.0
+
+# Async support (optional, for future enhancements)
+# asyncio is built-in in Python 3.7+
+
+# MCP integration (when available)
+# mcp>=0.1.0
+
+# Optional: For enhanced features
+# requests>=2.25.0  # HTTP client for external integrations
+# prometheus-client>=0.16.0  # For Prometheus metrics export
+# python-dotenv>=1.0.0  # For .env file support
+
+# Development and testing (not needed in production)
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.0.0
