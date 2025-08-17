@@ -1,0 +1,121 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'docs/**'
+      - 'README*.md'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'docs/**'
+      - 'README*.md'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Build documentation
+        run: |
+          # Create docs site structure
+          mkdir -p _site/docs
+          
+          # Copy all documentation files
+          cp -r docs/* _site/docs/
+          cp README*.md _site/
+          
+          # Create index.html for GitHub Pages
+          cat > _site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Retire-Cluster Documentation</title>
+              <style>
+                  body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+                  .language-selector { text-align: center; margin-bottom: 30px; }
+                  .language-selector a { 
+                      display: inline-block; margin: 0 10px; padding: 10px 20px; 
+                      background: #007acc; color: white; text-decoration: none; border-radius: 5px; 
+                  }
+                  .language-selector a:hover { background: #005a99; }
+                  .docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+                  .docs-card { 
+                      border: 1px solid #ddd; border-radius: 8px; padding: 20px; 
+                      background: #f9f9f9; text-decoration: none; color: #333; 
+                  }
+                  .docs-card:hover { background: #f0f0f0; }
+                  .docs-card h3 { margin-top: 0; color: #007acc; }
+              </style>
+          </head>
+          <body>
+              <h1>🚀 Retire-Cluster Documentation</h1>
+              <p>Transform your idle devices into a unified AI work cluster!</p>
+              
+              <div class="language-selector">
+                  <a href="docs/README.html">📖 English Documentation</a>
+                  <a href="docs/README_CN.html">📖 中文文档</a>
+              </div>
+              
+              <div class="docs-grid">
+                  <a href="docs/README.html" class="docs-card">
+                      <h3>🇺🇸 English Docs</h3>
+                      <p>Complete documentation in English including architecture, deployment guides, and API references.</p>
+                  </a>
+                  
+                  <a href="docs/README_CN.html" class="docs-card">
+                      <h3>🇨🇳 中文文档</h3>
+                      <p>完整的中文文档，包括系统架构、部署指南和API参考。</p>
+                  </a>
+                  
+                  <a href="docs/deployment-guide.html" class="docs-card">
+                      <h3>⚡ Quick Start</h3>
+                      <p>Get started quickly with Docker deployment on NAS systems.</p>
+                  </a>
+                  
+                  <a href="docs/architecture.html" class="docs-card">
+                      <h3>🏗️ Architecture</h3>
+                      <p>Understand the distributed system design and components.</p>
+                  </a>
+              </div>
+              
+              <hr style="margin: 40px 0;">
+              <p style="text-align: center; color: #666;">
+                  <a href="https://github.com/4ier/retire-cluster">View on GitHub</a> | 
+                  <a href="https://github.com/4ier/retire-cluster/issues">Report Issues</a>
+              </p>
+          </body>
+          </html>
+          EOF
+          
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
