@@ -99,10 +99,43 @@ setup_config() {
 build_image() {
     print_info "Building Docker image..."
     
-    docker build -t retire-cluster:latest . || {
-        print_error "Failed to build Docker image"
-        exit 1
-    }
+    # Build with proxy support if HTTP_PROXY is set
+    if [ -n "$HTTP_PROXY" ]; then
+        # Convert localhost proxy to Docker-accessible address
+        if [[ "$HTTP_PROXY" == *"127.0.0.1"* ]] || [[ "$HTTP_PROXY" == *"localhost"* ]]; then
+            # Get Docker host IP
+            DOCKER_HOST_IP=$(ip route | grep docker0 | awk '{print $9}' | head -1)
+            if [ -z "$DOCKER_HOST_IP" ]; then
+                DOCKER_HOST_IP=$(docker network inspect bridge | grep "Gateway" | awk '{print $2}' | tr -d '",' | head -1)
+            fi
+            if [ -n "$DOCKER_HOST_IP" ]; then
+                DOCKER_HTTP_PROXY=$(echo "$HTTP_PROXY" | sed "s/127\.0\.0\.1/$DOCKER_HOST_IP/g" | sed "s/localhost/$DOCKER_HOST_IP/g")
+                DOCKER_HTTPS_PROXY=$(echo "$HTTPS_PROXY" | sed "s/127\.0\.0\.1/$DOCKER_HOST_IP/g" | sed "s/localhost/$DOCKER_HOST_IP/g")
+                print_info "Converting proxy for Docker: $DOCKER_HTTP_PROXY"
+            else
+                DOCKER_HTTP_PROXY="$HTTP_PROXY"
+                DOCKER_HTTPS_PROXY="$HTTPS_PROXY"
+                print_warn "Could not detect Docker host IP, using original proxy"
+            fi
+        else
+            DOCKER_HTTP_PROXY="$HTTP_PROXY"
+            DOCKER_HTTPS_PROXY="$HTTPS_PROXY"
+        fi
+        
+        print_info "Building with proxy: $DOCKER_HTTP_PROXY"
+        docker build \
+            --build-arg HTTP_PROXY="$DOCKER_HTTP_PROXY" \
+            --build-arg HTTPS_PROXY="$DOCKER_HTTPS_PROXY" \
+            -t retire-cluster:latest . || {
+            print_error "Failed to build Docker image"
+            exit 1
+        }
+    else
+        docker build -t retire-cluster:latest . || {
+            print_error "Failed to build Docker image"
+            exit 1
+        }
+    fi
     
     print_info "Docker image built successfully"
 }
