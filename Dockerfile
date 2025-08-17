@@ -4,6 +4,12 @@
 # Stage 1: Builder
 FROM python:3.9-slim as builder
 
+# Configure proxy for apt (if needed)
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
