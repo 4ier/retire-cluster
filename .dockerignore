@@ -1,0 +1,103 @@
+# Git files
+.git
+.gitignore
+.github
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files
+tests/
+test_*.py
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Documentation
+docs/
+*.md
+!README.md
+!LICENSE
+
+# Docker files (don't need to copy these into the image)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+docker/
+
+# Environment files (should be mounted, not copied)
+.env
+.env.*
+!.env.example
+
+# Data directories (should be mounted as volumes)
+data/
+logs/
+*.log
+*.db
+*.sqlite
+
+# Backup files
+*.bak
+*.backup
+*.tar.gz
+*.zip
+
+# Development files
+*.ipynb
+.jupyter/
+notebooks/
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+azure-pipelines.yml
+.circleci/
+
+# Node.js (if any frontend build tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# PowerShell scripts (Windows development)
+*.ps1
+
+# Shell scripts (except essential ones)
+*.sh
+!docker/deploy.sh
+!docker/backup.sh
+!docker/health-monitor.sh

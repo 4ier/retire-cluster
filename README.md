@@ -188,62 +188,80 @@ task_id = scheduler.submit_task(task)
 
 ## 📖 Documentation
 
-### Basic Usage
+### Core Documentation
 
-```python
-# Start main node server
-from retire_cluster.communication.server import ClusterServer
-from retire_cluster.core.config import Config
+- **[Architecture Guide](docs/architecture.md)** - Complete system architecture and design
+- **[Deployment Guide](docs/deployment-guide.md)** - Comprehensive deployment instructions
+- **[Web Interface Design](docs/web-interface-design.md)** - Terminal-style web dashboard
+- **[CLI Interface Specification](docs/cli-interface-specification.md)** - Command reference
+- **[AI Integration Guide](docs/ai-integration-guide.md)** - AI-friendly interface patterns
 
-config = Config()
-server = ClusterServer(config)
-server.start()
+### Quick Examples
+
+#### Start Main Node
+```bash
+# Using Docker (Recommended for production)
+git clone https://github.com/yourusername/retire-cluster.git
+cd retire-cluster
+cp .env.example .env
+./docker/deploy.sh
+
+# Or run natively
+python -m retire_cluster.main_node --host 0.0.0.0 --port 8080
 ```
 
-```python
-# Start worker node client  
-from retire_cluster.communication.client import ClusterClient
-from retire_cluster.core.config import WorkerConfig
+#### Start Worker Node
+```bash
+# Download worker script
+curl -O https://raw.githubusercontent.com/yourusername/retire-cluster/main/examples/simple_worker_client.py
 
-config = WorkerConfig()
-config.device_id = "worker-001"
-config.main_host = "192.168.1.100"
-
-client = ClusterClient(config)
-client.run()
+# Run worker
+python simple_worker_client.py \
+    --device-id my-device \
+    --main-host 192.168.1.100 \
+    --role compute
 ```
 
-### Configuration
+#### Access Web Dashboard
+```bash
+# Open in browser
+open http://your-main-node:5000
 
-Configuration files are located in the `configs/` directory:
-
-- `main_config_example.json`: Main node configuration template
-- `worker_config_example.json`: Worker node configuration template
+# CLI-friendly access (AI/automation)
+curl http://your-main-node:5000/text/devices
+curl http://your-main-node:5000/api/v1/cluster/status
+```
 
 ### Platform-Specific Setup
 
 #### Android (Termux)
-
 ```bash
-# Install Termux from F-Droid or Google Play
-# In Termux:
-pkg update
-pkg install python
-pip install psutil
+# Install Termux from F-Droid
+pkg update && pkg install python
+pip install psutil requests
 
-# Run worker node
-python simple_worker_client.py --device-id android-001 --role mobile --main-host <MAIN_NODE_IP>
+# Run worker
+python simple_worker_client.py --device-id android-$(hostname) --role mobile --main-host 192.168.1.100
 ```
 
-#### Raspberry Pi / ARM Devices
-
+#### Raspberry Pi
 ```bash
-# Install Python if not present
-sudo apt-get update
-sudo apt-get install python3 python3-pip
+# Install dependencies
+sudo apt update && sudo apt install python3 python3-pip -y
+pip3 install psutil requests
 
-# Run worker node
-python3 simple_worker_client.py --device-id rpi-001 --role compute --main-host <MAIN_NODE_IP>
+# Run worker
+python3 simple_worker_client.py --device-id rpi-$(hostname) --role compute --main-host 192.168.1.100
+```
+
+#### NAS Deployment (Docker)
+```bash
+# Synology/QNAP NAS
+ssh admin@nas-ip
+cd /volume1/docker  # or /share/Container for QNAP
+git clone https://github.com/yourusername/retire-cluster.git
+cd retire-cluster
+./docker/deploy.sh --data-path /volume1/docker/retire-cluster
 ```
 
 ## 🔧 Advanced Features
@@ -346,34 +364,31 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] REST API with comprehensive endpoints
 - [x] API authentication and security middleware
 - [x] Complete API documentation and examples
-- [ ] Web dashboard
-- [ ] Docker support
+- [x] Web dashboard with terminal-style interface
+- [x] Docker deployment support with automated scripts
 
-### v1.2.0 (Planned)
-- [ ] Web-based management dashboard
-- [ ] Real-time cluster monitoring UI
-- [ ] Interactive task submission interface
-- [ ] Device management web interface
-- [ ] Docker containerization support
-- [ ] Docker Compose deployment templates
+### v1.2.0 (In Progress)
+- [x] CLI-style web interface with xterm.js terminal
+- [x] Multi-format APIs (JSON, CSV, TSV, plain text)
+- [x] Real-time streaming with Server-Sent Events
+- [x] AI-friendly interface patterns
+- [x] Docker containerization with health monitoring
+- [x] Automated backup and recovery scripts
+- [x] NAS deployment guides (Synology, QNAP)
 
 ### v2.0.0 (Future)
-- [ ] Distributed storage system
-- [ ] Advanced load balancing algorithms
-- [ ] Multi-cluster federation
-- [ ] Cloud provider integration (AWS, Azure, GCP)
-- [ ] Auto-scaling capabilities
-- [ ] Machine learning workload optimization
-- [ ] WebSocket real-time updates
-- [ ] Metrics and monitoring integration (Prometheus, Grafana)
+- [ ] Enhanced security with authentication and SSL/TLS
+- [ ] Performance monitoring and metrics dashboard
+- [ ] Advanced task scheduling algorithms
+- [ ] Plugin system for custom task types
+- [ ] Configuration management UI
+- [ ] Multi-language worker support (Node.js, Go)
 
-### Framework Integrations (Ongoing)
+### Framework Integrations (Optional)
 - [x] Temporal workflow integration support
-- [x] Celery task queue integration
+- [x] Celery task queue integration  
 - [x] HTTP bridge for external frameworks
-- [ ] Kubernetes operator
-- [ ] Apache Airflow integration
-- [ ] Ray distributed computing integration
+- [ ] Basic monitoring integration (Prometheus metrics)
 
 ---
 
