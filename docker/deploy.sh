@@ -161,11 +161,20 @@ deploy_services() {
 check_health() {
     print_info "Checking service health..."
     
+    # Load port configuration from .env
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+    fi
+    
+    # Use configured ports or defaults
+    local api_port="${CLUSTER_PORT:-8081}"
+    local web_port="${WEB_PORT:-5001}"
+    
     # Wait for services to start
     sleep 10
     
     # Check main node health
-    if curl -f http://localhost:8081/api/health &> /dev/null; then
+    if curl -f "http://localhost:${api_port}/api/health" &> /dev/null; then
         print_info "Main node is healthy"
     else
         print_warn "Main node health check failed, checking logs..."
@@ -173,7 +182,7 @@ check_health() {
     fi
     
     # Check web dashboard
-    if curl -f http://localhost:5001 &> /dev/null; then
+    if curl -f "http://localhost:${web_port}" &> /dev/null; then
         print_info "Web dashboard is accessible"
     else
         print_warn "Web dashboard not responding"
@@ -182,10 +191,20 @@ check_health() {
 
 show_info() {
     print_info "Deployment completed!"
+    
+    # Load port configuration from .env
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+    fi
+    
+    # Use configured ports or defaults
+    local api_port="${CLUSTER_PORT:-8081}"
+    local web_port="${WEB_PORT:-5001}"
+    
     echo ""
     echo "Services are running at:"
-    echo "  Main Node API: http://localhost:8081"
-    echo "  Web Dashboard: http://localhost:5001"
+    echo "  Main Node API: http://localhost:${api_port}"
+    echo "  Web Dashboard: http://localhost:${web_port}"
     echo ""
     echo "Useful commands:"
     echo "  View logs:     $COMPOSE_CMD logs -f"
