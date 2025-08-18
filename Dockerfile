@@ -1,149 +1,124 @@
-# Multi-stage Dockerfile for Retire-Cluster Main Node
-# Optimized for NAS deployment with minimal image size
-
+# ======================================================
 # Stage 1: Builder
+# ======================================================
 FROM python:3.9-slim as builder
 
-# Configure proxy for apt (if needed)
+# 可选代理参数（构建时传入）
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
-ENV HTTP_PROXY=${HTTP_PROXY}
-ENV HTTPS_PROXY=${HTTPS_PROXY}
+ARG NO_PROXY
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    http_proxy=${HTTP_PROXY} \
+    https_proxy=${HTTPS_PROXY} \
+    no_proxy=${NO_PROXY}
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+# APT 配置 + 切换阿里云源 + 安装构建依赖
+RUN set -eux; \
+    if [ -n "${HTTPS_PROXY:-}" ]; then echo "Acquire::https::Proxy \"${HTTPS_PROXY}\";" > /etc/apt/apt.conf.d/01proxy; fi; \
+    if [ -n "${HTTP_PROXY:-}"  ]; then echo "Acquire::http::Proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf.d/01proxy; fi; \
+    rm -f /etc/apt/sources.list.d/debian.sources; \
+    codename="$(. /etc/os-release && echo "$VERSION_CODENAME")"; \
+    printf 'deb https://mirrors.aliyun.com/debian %s main contrib non-free non-free-firmware\n' "$codename" > /etc/apt/sources.list; \
+    printf 'deb https://mirrors.aliyun.com/debian %s-updates main contrib non-free non-free-firmware\n' "$codename" >> /etc/apt/sources.list; \
+    printf 'deb https://mirrors.aliyun.com/debian-security %s-security main contrib non-free non-free-firmware\n' "$codename" >> /etc/apt/sources.list; \
+    apt-get update -o Acquire::Retries=5; \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        g++ \
+        python3-dev; \
+    rm -rf /var/lib/apt/lists/*; \
+    rm -f /etc/apt/apt.conf.d/01proxy; \
+    apt-get clean
 
-# Set working directory
 WORKDIR /build
 
-# Copy requirements first for better caching
+# 拷贝依赖文件
 COPY requirements.txt .
 
-# Install Python dependencies to user directory
+# 安装 Python 依赖（到用户目录）
 RUN pip install --user --no-cache-dir -r requirements.txt
 
+
+# ======================================================
 # Stage 2: Runtime
+# ======================================================
 FROM python:3.9-slim
 
 LABEL maintainer="Retire-Cluster Team"
 LABEL description="Main Node server for Retire-Cluster idle device management"
 LABEL version="1.0.0"
 
-# Install runtime dependencies only
-RUN apt-get update && apt-get install -y \
-    curl \
-    netcat-traditional \
-    sqlite3 \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+# 可选代理参数
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    http_proxy=${HTTP_PROXY} \
+    https_proxy=${HTTPS_PROXY} \
+    no_proxy=${NO_PROXY}
 
-# Create non-root user for security
+# 切源 + 安装运行时依赖
+RUN set -eux; \
+    if [ -n "${HTTPS_PROXY:-}" ]; then echo "Acquire::https::Proxy \"${HTTPS_PROXY}\";" > /etc/apt/apt.conf.d/01proxy; fi; \
+    if [ -n "${HTTP_PROXY:-}"  ]; then echo "Acquire::http::Proxy  \"${HTTP_PROXY}\";" >> /etc/apt/apt.conf.d/01proxy; fi; \
+    rm -f /etc/apt/sources.list.d/debian.sources; \
+    codename="$(. /etc/os-release && echo "$VERSION_CODENAME")"; \
+    printf 'deb https://mirrors.aliyun.com/debian %s main contrib non-free non-free-firmware\n' "$codename" > /etc/apt/sources.list; \
+    printf 'deb https://mirrors.aliyun.com/debian %s-updates main contrib non-free non-free-firmware\n' "$codename" >> /etc/apt/sources.list; \
+    printf 'deb https://mirrors.aliyun.com/debian-security %s-security main contrib non-free non-free-firmware\n' "$codename" >> /etc/apt/sources.list; \
+    apt-get update -o Acquire::Retries=5; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        netcat-traditional \
+        sqlite3; \
+    rm -rf /var/lib/apt/lists/*; \
+    rm -f /etc/apt/apt.conf.d/01proxy; \
+    apt-get clean
+
+# 创建非 root 用户
 RUN useradd -m -u 1000 -s /bin/bash cluster && \
     mkdir -p /data/config /data/database /data/logs /app && \
     chown -R cluster:cluster /data /app
 
-# Copy Python packages from builder
+# 从 builder 拷贝已安装的 Python 包
 COPY --from=builder --chown=cluster:cluster /root/.local /home/cluster/.local
 
-# Set working directory
+# 工作目录
 WORKDIR /app
 
-# Copy application code
+# 应用代码
 COPY --chown=cluster:cluster retire_cluster/ ./retire_cluster/
-COPY --chown=cluster:cluster README.md LICENSE ./
+COPY --chown=cluster:cluster setup.py README.md LICENSE ./
 
-# Create default configuration if not exists
-COPY --chown=cluster:cluster <<EOF /app/default_config.json
-{
-  "server": {
-    "host": "0.0.0.0",
-    "port": 8080,
-    "max_connections": 100
-  },
-  "web": {
-    "enabled": true,
-    "host": "0.0.0.0",
-    "port": 5000,
-    "debug": false
-  },
-  "database": {
-    "path": "/data/database/cluster.db",
-    "backup_enabled": true,
-    "backup_interval": 3600
-  },
-  "logging": {
-    "level": "INFO",
-    "file": "/data/logs/cluster.log",
-    "max_size": "10MB",
-    "backup_count": 5
-  },
-  "cluster": {
-    "heartbeat_interval": 60,
-    "offline_threshold": 300,
-    "task_timeout": 3600,
-    "max_retries": 3
-  }
-}
-EOF
+# 配置文件示例（如果存在）
+COPY --chown=cluster:cluster configs/main_config_example.json /data/config/
 
-# Create startup script
-COPY --chown=cluster:cluster <<'EOF' /app/start.sh
-#!/bin/bash
-set -e
-
-# Copy default config if not exists
-if [ ! -f /data/config/config.json ]; then
-    echo "Creating default configuration..."
-    cp /app/default_config.json /data/config/config.json
-fi
-
-# Initialize database if not exists
-if [ ! -f /data/database/cluster.db ]; then
-    echo "Initializing database..."
-    python -m retire_cluster.database.init
-fi
-
-# Start both Main Node and Web Dashboard
-echo "Starting Retire-Cluster Main Node..."
-python -m retire_cluster.main_node --config /data/config/config.json &
-MAIN_PID=$!
-
-echo "Starting Web Dashboard..."
-python -m retire_cluster.web.app --config /data/config/config.json &
-WEB_PID=$!
-
-# Wait for any process to exit
-wait -n
-
-# Exit with status of process that exited first
-exit $?
-EOF
-
-RUN chmod +x /app/start.sh
-
-# Switch to non-root user
+# 切换到非 root 用户
 USER cluster
 
-# Set environment variables
-ENV PYTHONPATH=/app:/home/cluster/.local/lib/python3.9/site-packages
-ENV PATH=/home/cluster/.local/bin:$PATH
-ENV PYTHONUNBUFFERED=1
+# 环境变量
+ENV PYTHONPATH=/app:/home/cluster/.local/lib/python3.9/site-packages \
+    PATH=/home/cluster/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    CLUSTER_HOST=0.0.0.0 \
+    CLUSTER_PORT=8080 \
+    WEB_PORT=5000 \
+    DATABASE_PATH=/data/database/cluster.db
 
-# Health check
+# 健康检查
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8080/api/health || exit 1
 
-# Expose ports
-# 8080: Main Node API
-# 5000: Web Dashboard
+# 暴露端口
 EXPOSE 8080 5000
 
-# Volume mount points
+# 挂载点
 VOLUME ["/data/config", "/data/database", "/data/logs"]
 
-# Entry point
-ENTRYPOINT ["/app/start.sh"]
+# 启动命令 - 直接运行Python主程序
+CMD ["python", "-m", "retire_cluster.main_node"]

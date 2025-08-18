@@ -9,6 +9,7 @@ CHECK_INTERVAL=60  # seconds
 MAX_FAILURES=3
 ALERT_COOLDOWN=3600  # seconds between repeated alerts
 LOG_FILE="/var/log/retire-cluster-monitor.log"
+ENV_FILE=".env"  # Path to environment file
 
 # State tracking
 FAILURE_COUNT=0
@@ -102,7 +103,14 @@ check_container() {
 
 # Check API health
 check_api_health() {
-    local api_url="http://localhost:8080/api/health"
+    # Load port configuration from .env
+    local api_port="8081"  # default
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE" 2>/dev/null
+        api_port="${CLUSTER_PORT:-8081}"
+    fi
+    
+    local api_url="http://localhost:${api_port}/api/health"
     local response
     
     # Make health check request
@@ -121,7 +129,14 @@ check_api_health() {
 
 # Check web dashboard
 check_web_dashboard() {
-    local web_url="http://localhost:5000"
+    # Load port configuration from .env
+    local web_port="5001"  # default
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE" 2>/dev/null
+        web_port="${WEB_PORT:-5001}"
+    fi
+    
+    local web_url="http://localhost:${web_port}"
     
     # Simple connectivity check
     if ! curl -s -f -o /dev/null "$web_url" 2>/dev/null; then
@@ -291,6 +306,10 @@ main() {
                 ALERT_WEBHOOK="$2"
                 shift 2
                 ;;
+            --env-file)
+                ENV_FILE="$2"
+                shift 2
+                ;;
             --daemon)
                 DAEMON_MODE=true
                 shift
@@ -303,6 +322,7 @@ main() {
                 echo "  --max-failures COUNT    Max failures before alert (default: 3)"
                 echo "  --email ADDRESS         Email for alerts"
                 echo "  --webhook URL           Webhook URL for alerts"
+                echo "  --env-file PATH         Path to .env file (default: .env)"
                 echo "  --daemon                Run as daemon"
                 echo "  --help                  Show this help"
                 exit 0
