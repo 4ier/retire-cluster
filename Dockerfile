@@ -98,6 +98,10 @@ COPY --chown=cluster:cluster setup.py README.md LICENSE ./
 # 配置文件示例（如果存在）
 COPY --chown=cluster:cluster configs/main_config_example.json /data/config/
 
+# 复制启动脚本
+COPY --chown=cluster:cluster entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # 切换到非 root 用户
 USER cluster
 
@@ -120,5 +124,5 @@ EXPOSE 8080 5000
 # 挂载点
 VOLUME ["/data/config", "/data/database", "/data/logs"]
 
-# 启动命令 - 直接运行Python主程序
-CMD ["python", "-m", "retire_cluster.main_node"]
+# 启动命令 - 运行启动脚本以同时启动主节点和Web服务
+CMD ["/app/entrypoint.sh"]
