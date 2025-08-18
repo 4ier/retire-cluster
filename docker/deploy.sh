@@ -165,7 +165,7 @@ check_health() {
     sleep 10
     
     # Check main node health
-    if curl -f http://localhost:8080/api/health &> /dev/null; then
+    if curl -f http://localhost:8081/api/health &> /dev/null; then
         print_info "Main node is healthy"
     else
         print_warn "Main node health check failed, checking logs..."
@@ -173,7 +173,7 @@ check_health() {
     fi
     
     # Check web dashboard
-    if curl -f http://localhost:5000 &> /dev/null; then
+    if curl -f http://localhost:5001 &> /dev/null; then
         print_info "Web dashboard is accessible"
     else
         print_warn "Web dashboard not responding"
@@ -184,8 +184,8 @@ show_info() {
     print_info "Deployment completed!"
     echo ""
     echo "Services are running at:"
-    echo "  Main Node API: http://localhost:8080"
-    echo "  Web Dashboard: http://localhost:5000"
+    echo "  Main Node API: http://localhost:8081"
+    echo "  Web Dashboard: http://localhost:5001"
     echo ""
     echo "Useful commands:"
     echo "  View logs:     $COMPOSE_CMD logs -f"

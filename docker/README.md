@@ -13,8 +13,8 @@ cp ../.env.example ../.env
 ./deploy.sh
 
 # Access services
-# Main Node API: http://nas-ip:8080
-# Web Dashboard: http://nas-ip:5000
+# Main Node API: http://nas-ip:8081
+# Web Dashboard: http://nas-ip:5001
 ```
 
 ## Files Overview
@@ -72,7 +72,7 @@ cp ../.env.example ../.env
 docker logs -f retire-cluster-main
 
 # Check health
-curl http://localhost:8080/api/health
+curl http://localhost:8081/api/health
 
 # Monitor resources
 docker stats retire-cluster-main

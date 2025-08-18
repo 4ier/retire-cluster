@@ -102,7 +102,7 @@ check_container() {
 
 # Check API health
 check_api_health() {
-    local api_url="http://localhost:8080/api/health"
+    local api_url="http://localhost:8081/api/health"
     local response
     
     # Make health check request
@@ -121,7 +121,7 @@ check_api_health() {
 
 # Check web dashboard
 check_web_dashboard() {
-    local web_url="http://localhost:5000"
+    local web_url="http://localhost:5001"
     
     # Simple connectivity check
     if ! curl -s -f -o /dev/null "$web_url" 2>/dev/null; then
