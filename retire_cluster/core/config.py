@@ -48,7 +48,7 @@ class WorkerConfig:
     """Worker node configuration"""
     device_id: str = ""
     role: str = "worker"
-    main_host: str = "192.168.0.116"
+    main_host: str = "localhost"
     main_port: int = 8080
     heartbeat_interval: int = 60
     max_concurrent_tasks: int = 2

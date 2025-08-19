@@ -46,14 +46,14 @@ python -m retire_cluster.main_node --host 0.0.0.0 --port 8080 --debug
 retire-cluster-main --data-dir /opt/retire-cluster
 
 # Worker node
-python -m retire_cluster.worker_node --auto-id --role worker --main-host 192.168.0.116
-retire-cluster-worker --join 192.168.0.116 --device-id my-device --role compute
+python -m retire_cluster.worker_node --auto-id --role worker --main-host $NAS_HOST
+retire-cluster-worker --join $NAS_HOST --device-id my-device --role compute
 
 # API server
 retire-cluster-api --port 8081 --auth --api-key your-secret-key
 
 # Cluster status
-retire-cluster-status 192.168.0.116 --devices --json
+retire-cluster-status $NAS_HOST --devices --json
 ```
 
 ### Docker Deployment
@@ -89,14 +89,21 @@ TCP socket JSON messages:
 
 ## Test Environment
 
-### Main Node (192.168.0.116)
+### Main Node
 ```bash
-ssh 18617007050@192.168.0.116
-/share/CACHEDEV1_DATA/.samba_python3/Python3/bin/python3 ~/simple_legacy_main.py
+ssh $NAS_USER@$NAS_HOST
+$NAS_PYTHON_PATH ~/simple_legacy_main.py
 ```
 
-### Worker Node (192.168.0.111:8022)
+### Worker Node
 ```bash
-ssh -p 8022 u0_a463@192.168.0.111
-python simple_legacy_worker.py --device-id android-001 --role mobile --main-host 192.168.0.116
+ssh -p $WORKER_SSH_PORT $WORKER_SSH_USER@$WORKER_TEST_HOST
+python simple_legacy_worker.py --device-id android-001 --role mobile --main-host $NAS_HOST
 ```
+
+Note: Configure these variables in your .env file:
+- NAS_HOST: Your NAS IP address
+- NAS_USER: Your NAS username  
+- WORKER_TEST_HOST: Worker device IP
+- WORKER_SSH_USER: Worker device username
+- WORKER_SSH_PORT: Worker SSH port (default 8022 for Termux)

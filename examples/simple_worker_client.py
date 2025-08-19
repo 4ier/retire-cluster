@@ -290,7 +290,7 @@ def main():
     parser = argparse.ArgumentParser(description='Simple Worker Node (Legacy)')
     parser.add_argument('--device-id', required=True, help='Device ID')
     parser.add_argument('--role', default='worker', help='Device role')
-    parser.add_argument('--main-host', default='192.168.0.116', help='Main node host')
+    parser.add_argument('--main-host', default='localhost', help='Main node host')
     parser.add_argument('--main-port', type=int, default=8080, help='Main node port')
     parser.add_argument('--test', action='store_true', help='Test mode only')
     

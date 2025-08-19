@@ -6,7 +6,7 @@
     "description": "Test worker node on Android Termux"
   },
   "main_node": {
-    "host": "192.168.0.116",
+    "host": "${NAS_HOST}",
     "port": 8080,
     "ssl_enabled": false
   },

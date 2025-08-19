@@ -182,7 +182,7 @@ EOF
     "role": "worker"
   },
   "main_node": {
-    "host": "192.168.0.116",
+    "host": "localhost",
     "port": 8080
   },
   "heartbeat": {
