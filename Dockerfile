@@ -114,9 +114,9 @@ ENV PYTHONPATH=/app:/home/cluster/.local/lib/python3.9/site-packages \
     WEB_PORT=5000 \
     DATABASE_PATH=/data/database/cluster.db
 
-# 健康检查
-HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8080/api/health || exit 1
+# 健康检查 - 检查两个服务
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/api/health && curl -f http://localhost:5000/api/v1/cluster/status || exit 1
 
 # 暴露端口
 EXPOSE 8080 5000

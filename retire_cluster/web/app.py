@@ -54,6 +54,13 @@ def create_app(cluster_server=None, testing=False):
         cluster_server.get_logs.return_value = []
         executor = CommandExecutor(cluster_server)
     
+    # Root route - redirect to CLI interface
+    @app.route('/', methods=['GET'])
+    def index():
+        """Redirect root to CLI interface"""
+        from flask import redirect
+        return redirect('/cli')
+    
     # Text API Endpoints
     
     @app.route('/text/devices', methods=['GET'])
