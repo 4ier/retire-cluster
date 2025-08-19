@@ -46,7 +46,7 @@ def main():
 Examples:
   %(prog)s --device-id my-phone-01                    # Basic usage
   %(prog)s --device-id tablet-01 --role mobile        # Set device role
-  %(prog)s --main-host 192.168.1.100 --main-port 8080 # Connect to custom main node
+  %(prog)s --main-host $NAS_HOST --main-port 8080 # Connect to custom main node
   %(prog)s --auto-id --role worker                     # Auto-generate device ID
   %(prog)s --test                                      # Test connection only
         """
@@ -72,8 +72,8 @@ Examples:
     
     parser.add_argument(
         '--main-host',
-        default='192.168.0.116',
-        help='Main node host address (default: 192.168.0.116)'
+        default='localhost',
+        help='Main node host address (default: localhost)'
     )
     
     parser.add_argument(

@@ -135,7 +135,7 @@ def deploy_to_host(host: str, username: str, package_path: str, node_type: str,
     "role": "worker"
   }},
   "main_node": {{
-    "host": "192.168.0.116",
+    "host": "localhost",
     "port": 8080
   }}
 }}"""

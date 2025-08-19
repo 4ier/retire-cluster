@@ -148,3 +148,17 @@ worker_config.json
 *.tar.gz
 *.zip
 .claude/
+
+# Deployment scripts and sensitive files
+deploy_to_nas.sh
+deploy_nas_windows.bat
+deploy_remote.sh
+update_nas_docker.sh
+mini_terminal.py
+run_web_server.py
+simple_web_server.py
+terminal-fixes.tar.gz
+retire-cluster-deploy.tar.gz
+
+# Debug and connection files with sensitive info
+debug-connection.md
