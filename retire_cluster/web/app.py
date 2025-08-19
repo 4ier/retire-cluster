@@ -54,12 +54,21 @@ def create_app(cluster_server=None, testing=False):
         cluster_server.get_logs.return_value = []
         executor = CommandExecutor(cluster_server)
     
-    # Root route - redirect to CLI interface
+    # Root route - redirect to dashboard
     @app.route('/', methods=['GET'])
     def index():
-        """Redirect root to CLI interface"""
+        """Redirect root to dashboard"""
         from flask import redirect
-        return redirect('/cli')
+        return redirect('/dashboard')
+    
+    # Dashboard route
+    @app.route('/dashboard', methods=['GET'])
+    def dashboard():
+        """Serve the dashboard interface"""
+        from flask import send_from_directory
+        import os
+        static_path = os.path.join(app.root_path, 'static')
+        return send_from_directory(static_path, 'index.html')
     
     # Text API Endpoints
     

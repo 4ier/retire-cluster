@@ -298,11 +298,11 @@ class RetireClusterTerminal {
         line = line.replace(/\bHEALTHY\b/g, '\x1b[32mHEALTHY\x1b[0m');
         
         // Color numbers and percentages
-        line = line.replace(/\\b(\\d+)%/g, '\x1b[36m$1%\x1b[0m');
-        line = line.replace(/\\b(\\d+\\.\\d+)GB/g, '\x1b[35m$1GB\x1b[0m');
+        line = line.replace(/\b(\d+)%/g, '\x1b[36m$1%\x1b[0m');
+        line = line.replace(/\b(\d+\.\d+)GB/g, '\x1b[35m$1GB\x1b[0m');
         
         // Color device IDs
-        line = line.replace(/\\b([a-z]+-\\d+)\\b/g, '\x1b[33m$1\x1b[0m');
+        line = line.replace(/\b([a-z]+-\d+)\b/g, '\x1b[33m$1\x1b[0m');
         
         // Color table separators
         line = line.replace(/─+/g, '\x1b[90m$&\x1b[0m');
