@@ -50,12 +50,13 @@ class RetireClusterTerminal {
             scrollback: 10000,
             tabStopWidth: 4,
             bell: 'none',
-            cols: 80,
-            rows: 24,
             convertEol: true,
             screenKeys: true,
             useStyle: true,
-            cursorStyle: 'block'
+            lineHeight: 1.2,
+            letterSpacing: 0,
+            fontWeight: 'normal',
+            fontWeightBold: 'bold'
         });
         
         // Create fit addon
@@ -64,7 +65,11 @@ class RetireClusterTerminal {
         
         // Open terminal
         this.term.open(document.getElementById('terminal'));
-        this.fitAddon.fit();
+        
+        // Fit terminal to container with slight delay to ensure proper sizing
+        setTimeout(() => {
+            this.fitAddon.fit();
+        }, 50);
         
         // Setup event handlers
         this.setupEventHandlers();
@@ -88,9 +93,15 @@ class RetireClusterTerminal {
             this.handleInput(data);
         });
         
-        // Handle window resize
+        // Handle window resize with debounce
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            this.fitAddon.fit();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (this.fitAddon) {
+                    this.fitAddon.fit();
+                }
+            }, 100);
         });
         
         // Handle special key combinations
@@ -133,8 +144,8 @@ class RetireClusterTerminal {
         // Write welcome message with proper line endings
         this.term.write('\r\n');
         this.term.write('\x1b[32m╔══════════════════════════════════════════════════════════════════╗\x1b[0m\r\n');
-        this.term.write('\x1b[32m║                        RETIRE-CLUSTER v1.1.0                    ║\x1b[0m\r\n');
-        this.term.write('\x1b[32m║              CLI-First Distributed Computing Platform            ║\x1b[0m\r\n');
+        this.term.write('\x1b[32m║                     RETIRE-CLUSTER v1.1.0                       ║\x1b[0m\r\n');
+        this.term.write('\x1b[32m║            CLI-First Distributed Computing Platform             ║\x1b[0m\r\n');
         this.term.write('\x1b[32m╚══════════════════════════════════════════════════════════════════╝\x1b[0m\r\n');
         this.term.write('\r\n');
         this.term.write('\x1b[36mWelcome to the Retire-Cluster terminal interface!\x1b[0m\r\n');

@@ -93,6 +93,7 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 #terminal {
@@ -101,6 +102,7 @@ body {
     background: var(--bg-primary);
     flex: 1;
     min-height: 0;
+    position: relative;
 }
 
 /* xterm.js overrides */
@@ -108,19 +110,33 @@ body {
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace !important;
     font-size: 14px !important;
     line-height: 1.2 !important;
+    padding: 0 !important;
+    height: 100% !important;
 }
 
 .xterm-viewport {
     background: var(--bg-primary) !important;
+    overflow-y: auto !important;
 }
 
 .xterm-screen {
     background: var(--bg-primary) !important;
+    width: 100% !important;
 }
 
 .xterm-cursor {
     background: var(--text-primary) !important;
     color: var(--bg-primary) !important;
+}
+
+.xterm-cursor-layer {
+    z-index: 2;
+}
+
+.xterm-helpers {
+    position: absolute;
+    top: 0;
+    z-index: 5;
 }
 
 /* Sidebar */
