@@ -49,7 +49,13 @@ class RetireClusterTerminal {
             cursorStyle: 'block',
             scrollback: 10000,
             tabStopWidth: 4,
-            bell: 'none'
+            bell: 'none',
+            cols: 80,
+            rows: 24,
+            convertEol: true,
+            screenKeys: true,
+            useStyle: true,
+            cursorStyle: 'block'
         });
         
         // Create fit addon
@@ -121,19 +127,21 @@ class RetireClusterTerminal {
     }
     
     showWelcome() {
-        const welcomeText = `
-\x1b[32m╔══════════════════════════════════════════════════════════════════╗\x1b[0m
-\x1b[32m║                        RETIRE-CLUSTER v1.1.0                    ║\x1b[0m
-\x1b[32m║              CLI-First Distributed Computing Platform            ║\x1b[0m
-\x1b[32m╚══════════════════════════════════════════════════════════════════╝\x1b[0m
-
-\x1b[36mWelcome to the Retire-Cluster terminal interface!\x1b[0m
-
-Type '\x1b[33mhelp\x1b[0m' for available commands or '\x1b[33mtab\x1b[0m' for auto-completion.
-Use '\x1b[33mmonitor\x1b[0m' to start real-time monitoring.
-
-`;
-        this.term.write(welcomeText);
+        // Clear screen first
+        this.term.write('\x1b[2J\x1b[H');
+        
+        // Write welcome message with proper line endings
+        this.term.write('\r\n');
+        this.term.write('\x1b[32m╔══════════════════════════════════════════════════════════════════╗\x1b[0m\r\n');
+        this.term.write('\x1b[32m║                        RETIRE-CLUSTER v1.1.0                    ║\x1b[0m\r\n');
+        this.term.write('\x1b[32m║              CLI-First Distributed Computing Platform            ║\x1b[0m\r\n');
+        this.term.write('\x1b[32m╚══════════════════════════════════════════════════════════════════╝\x1b[0m\r\n');
+        this.term.write('\r\n');
+        this.term.write('\x1b[36mWelcome to the Retire-Cluster terminal interface!\x1b[0m\r\n');
+        this.term.write('\r\n');
+        this.term.write('Type \'\x1b[33mhelp\x1b[0m\' for available commands or \'\x1b[33mtab\x1b[0m\' for auto-completion.\r\n');
+        this.term.write('Use \'\x1b[33mmonitor\x1b[0m\' to start real-time monitoring.\r\n');
+        this.term.write('\r\n');
     }
     
     showPrompt() {

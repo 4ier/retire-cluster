@@ -2,6 +2,14 @@
 
 This directory contains scripts and configurations for deploying Retire-Cluster Main Node in Docker containers, optimized for NAS environments.
 
+## Important: Container Services
+
+The Docker container runs TWO services:
+- **Main Node API** (Port 8080/8081): Cluster management API
+- **Web Dashboard** (Port 5000/5001): Web interface for monitoring
+
+Both services are started automatically by the entrypoint script.
+
 ## Quick Start
 
 ```bash
@@ -74,8 +82,34 @@ docker logs -f retire-cluster-main
 # Check health
 curl http://localhost:8081/api/health
 
+# Check web dashboard
+curl http://localhost:5001
+
 # Monitor resources
 docker stats retire-cluster-main
+
+# Check both services are running
+docker exec retire-cluster-main sh -c "curl localhost:8080/api/health && curl localhost:5000"
+```
+
+## Troubleshooting
+
+### Web Dashboard Not Accessible
+If the web dashboard is not accessible but the container is running:
+
+1. Check if both services are running:
+```bash
+docker exec retire-cluster-main netstat -tulpn | grep -E "(5000|8080)"
+```
+
+2. Restart the container:
+```bash
+docker-compose restart
+```
+
+3. Check container logs for errors:
+```bash
+docker logs retire-cluster-main --tail 50
 ```
 
 See [Deployment Guide](../docs/deployment-guide.md) for complete documentation.

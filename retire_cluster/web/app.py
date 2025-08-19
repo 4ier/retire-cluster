@@ -54,6 +54,13 @@ def create_app(cluster_server=None, testing=False):
         cluster_server.get_logs.return_value = []
         executor = CommandExecutor(cluster_server)
     
+    # Root route - redirect to CLI interface
+    @app.route('/', methods=['GET'])
+    def index():
+        """Redirect root to CLI interface"""
+        from flask import redirect
+        return redirect('/cli')
+    
     # Text API Endpoints
     
     @app.route('/text/devices', methods=['GET'])
@@ -438,6 +445,24 @@ def create_app(cluster_server=None, testing=False):
                             window.terminal.term.write('help\\r');
                             window.terminal.executeCommand();
                         }
+                    }
+                });
+                
+                // Ensure proper sizing after page load
+                window.addEventListener('load', function() {
+                    setTimeout(function() {
+                        if (window.terminal && window.terminal.fitAddon) {
+                            window.terminal.fitAddon.fit();
+                        }
+                    }, 100);
+                });
+                
+                // Handle page visibility changes
+                document.addEventListener('visibilitychange', function() {
+                    if (!document.hidden && window.terminal && window.terminal.fitAddon) {
+                        setTimeout(function() {
+                            window.terminal.fitAddon.fit();
+                        }, 50);
                     }
                 });
             </script>
