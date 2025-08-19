@@ -447,6 +447,24 @@ def create_app(cluster_server=None, testing=False):
                         }
                     }
                 });
+                
+                // Ensure proper sizing after page load
+                window.addEventListener('load', function() {
+                    setTimeout(function() {
+                        if (window.terminal && window.terminal.fitAddon) {
+                            window.terminal.fitAddon.fit();
+                        }
+                    }, 100);
+                });
+                
+                // Handle page visibility changes
+                document.addEventListener('visibilitychange', function() {
+                    if (!document.hidden && window.terminal && window.terminal.fitAddon) {
+                        setTimeout(function() {
+                            window.terminal.fitAddon.fit();
+                        }, 50);
+                    }
+                });
             </script>
         </body>
         </html>
